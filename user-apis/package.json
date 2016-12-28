@@ -1,0 +1,19 @@
+{
+  "name": "user-apis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create": "claudia create --name givr-user-apis --region eu-west-1 --api-module index --policies policies --profile givr",
+    "deploy": "claudia update --profile givr"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.7.19",
+    "bluebird": "^3.4.7",
+    "claudia-api-builder": "^2.3.1",
+    "dynamodb-doc": "^1.0.0"
+  }
+}

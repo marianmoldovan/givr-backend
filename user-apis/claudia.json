@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "givr-user-apis-executor",
+    "name": "givr-user-apis",
+    "region": "eu-west-1"
+  },
+  "api": {
+    "id": "z2wkqb7ah0",
+    "module": "index"
+  }
+}
