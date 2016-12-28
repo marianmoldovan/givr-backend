@@ -1,5 +1,5 @@
 'use strict';
-
+// TODO: Please add , {authorizationType: 'AWS_IAM'}  when finished...
 const ApiBuilder = require('claudia-api-builder'),
     api = new ApiBuilder(),
     Promise = require('bluebird'),
