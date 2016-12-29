@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "givr-campaign-apis-executor",
+    "name": "givr-campaign-apis",
+    "region": "eu-west-1"
+  },
+  "api": {
+    "id": "oaghht9zu4",
+    "module": "index"
+  }
+}
