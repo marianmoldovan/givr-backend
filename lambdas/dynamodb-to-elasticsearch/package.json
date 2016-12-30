@@ -1,0 +1,18 @@
+{
+  "name": "dynamodb-to-elasticsearch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dynamo-doc": "^0.1.1",
+    "dynamo2es-lambda": "^1.0.0",
+    "hasha": "^2.2.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
