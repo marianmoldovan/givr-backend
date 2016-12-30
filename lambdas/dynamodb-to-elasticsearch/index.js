@@ -32,7 +32,7 @@ exports.handler = (event, context, callback) => {
     });
 };
 
-function postToES(doc, context) {
+function postToES(doc, callback) {
     var req = new AWS.HttpRequest(endpoint);
 
     var objectId = hasha(doc.user + doc.created);
@@ -73,7 +73,7 @@ function executeRequest(req, callback) {
       });
       httpResp.on('end', function (chunk) {
           console.log('Response: ' + respBody);
-          callback(null, 'Lambda added document ' + doc);
+          callback(null, 'Lambda added document ' + req.body);
       });
   }, function(err) {
       console.log('Error: ' + err);
