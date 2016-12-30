@@ -42,11 +42,11 @@ api.get('/user/find', function(request) {
   return docClient.scanAsync(params);
 });
 
-api.put('/user/{user}', function(request) {
+api.put('/user', function(request) {
   var params = {
     TableName: getTableName(),
     Key: {
-      user: request.pathParams.user
+      user: request.queryString.user
     },
     AttributeUpdates: {}
   };
@@ -56,11 +56,11 @@ api.put('/user/{user}', function(request) {
   return docClient.updateItemAsync(params);
 });
 
-api.delete('/user/{user}', function(request) {
+api.delete('/user', function(request) {
   var params = {
     TableName: getTableName(),
     Key: {
-      user: request.pathParams.user
+      user: request.queryString.user
     }
   };
   return docClient.deleteItemAsync(params);
