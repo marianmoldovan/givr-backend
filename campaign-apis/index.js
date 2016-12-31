@@ -87,6 +87,13 @@ api.get('/campaign/near', function(request) {
   return elsearch.near(request.queryString);
 });
 
+api.get('/campaign/find', function(request) {
+  var requiredKeys = ['query','lat', 'lon'];
+  if(!_.every(requiredKeys, _.partial(_.has, request.queryString)))
+    return new api.ApiResponse({errorMessage: 'Missing parameters ' + requiredKeys.join(',')}, {'Content-Type': 'application/json'}, 400);
+  return elsearch.find(request.queryString);
+});
+
 function getTableName() {
     return process.env.Tablename || 'givr-campaigns';
 };

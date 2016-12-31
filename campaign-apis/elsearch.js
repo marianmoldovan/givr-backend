@@ -3,6 +3,7 @@
 const AWS = require('aws-sdk');
 const path = require('path');
 const Promise = require('bluebird');
+const staticQueries = require('./staticQueries');
 
 const esDomain = {
     region: 'eu-west-1',
@@ -26,32 +27,39 @@ module.exports.near = function(queryString) {
   });
 }
 
-const searchNearQuery = {
-  'query': {
-    'match_all': {
-    }
-  },
-  'sort': [
-    {
-      '_geo_distance': {
-        'location': {
-          'lat': 40.438253,
-          'lon': -3.6995181
-        },
-        'order': 'asc',
-        'unit':  'm',
-        'mode' : 'min'
-      },
-      'created': { 'order': 'desc', 'mode':  'min'}
-    }
-  ]
-};
+module.exports.find = function(queryString) {
+  return new Promise(function(resolve, reject) {
+    findAndGetNear(queryString.lat, queryString.lon, queryString.query).then(function(result){
+      resolve(JSON.parse(result).hits.hits.map(function(item){
+        var itemObject = Object.assign({}, item._source);
+        itemObject.distance = item.sort[0];
+        return itemObject;
+      }));
+    }).catch(reject);
+  });
+}
+
+function findAndGetNear(lat, lon, query) {
+  return new Promise(function(resolve, reject) {
+    var queryBody = Object.assign({}, staticQueries.searchAndFindNearQuery);
+    queryBody.sort[0]._geo_distance.location.lat = lat;
+    queryBody.sort[0]._geo_distance.location.lon = lon;
+    queryBody.query.multi_match.query = query;
+    executeRequest(queryBody).then(resolve).catch(reject);
+  });
+}
 
 function getNear(lat, lon) {
   return new Promise(function(resolve, reject) {
-    var queryBody = Object.assign({}, searchNearQuery);
+    var queryBody = Object.assign({}, staticQueries.searchNearQuery);
     queryBody.sort[0]._geo_distance.location.lat = lat;
     queryBody.sort[0]._geo_distance.location.lon = lon;
+    executeRequest(queryBody).then(resolve).catch(reject);
+  });
+}
+
+function executeRequest(queryBody) {
+  return new Promise(function(resolve, reject) {
 
     var req = new AWS.HttpRequest(endpoint);
 
@@ -62,12 +70,8 @@ function getNear(lat, lon) {
     req.headers['Host'] = endpoint.host;
     req.body = JSON.stringify(queryBody);
 
-    executeRequest(req).then(resolve).catch(reject);
-  });
-}
+    console.log('Query', queryBody);
 
-function executeRequest(req) {
-  return new Promise(function(resolve, reject) {
     var signer = new AWS.Signers.V4(req , 'es');
     signer.addAuthorization(creds, new Date());
 
