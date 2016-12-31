@@ -7,6 +7,8 @@ const ApiBuilder = require('claudia-api-builder'),
     doc = require('dynamodb-doc'),
     _ = require('lodash');
 
+const elsearch = require('./elsearch');
+
 const docClient = Promise.promisifyAll(new doc.DynamoDB());
 
 module.exports = api;
@@ -29,10 +31,21 @@ api.get('/campaign', function(request) {
   return docClient.getItemAsync(params);
 });
 
+api.get('/campaign', function(request) {
+  var params = {
+    TableName: getTableName(),
+    Key: {
+      user: request.queryString.user,
+      created: parseInt(request.queryString.created)
+    }
+  };
+  return docClient.getItemAsync(params);
+});
+
 api.post('/campaign', function(request) {
   var requiredKeys = ['user', 'location', 'title', 'description', 'items'];
   if(!_.every(requiredKeys, _.partial(_.has, request.body)))
-    return new api.ApiResponse({errorMessage: 'Missing parameters'}, {'Content-Type': 'application/json'}, 400);
+    return new api.ApiResponse({errorMessage: 'Missing parameters ' + requiredKeys.join(',')}, {'Content-Type': 'application/json'}, 400);
   var params = {
     TableName: getTableName(),
     Item: request.body
@@ -45,7 +58,7 @@ api.put('/campaign', function(request) {
   var params = {
     TableName: getTableName(),
     Key: {
-      user: request.queryString.user,
+      user:  request.queryString.user,
       created: parseInt(request.queryString.created)
     },
     AttributeUpdates: {}
@@ -54,6 +67,24 @@ api.put('/campaign', function(request) {
     params.AttributeUpdates[key] = {Action: 'PUT', Value: request.body[key]}
   });
   return docClient.updateItemAsync(params);
+});
+
+api.delete('/campaign', function(request) {
+  var params = {
+    TableName: getTableName(),
+    Key: {
+      user:  request.queryString.user,
+      created: parseInt(request.queryString.created)
+    }
+  };
+  return docClient.deleteItemAsync(params);
+});
+
+api.get('/campaign/near', function(request) {
+  var requiredKeys = ['lat', 'lon'];
+  if(!_.every(requiredKeys, _.partial(_.has, request.queryString)))
+    return new api.ApiResponse({errorMessage: 'Missing parameters ' + requiredKeys.join(',')}, {'Content-Type': 'application/json'}, 400);
+  return elsearch.near(request.queryString);
 });
 
 function getTableName() {
